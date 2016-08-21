@@ -37,12 +37,12 @@ users.removeUser(jerry._id);
 
 ## API
 
-### `const users = new UserStore([filename])`
+### `const users = new UserStore(opts)`
 
 Constructor for a new place to store users.
 
 *Parameters:*
-  - `filename` (optional). The place where data is stored. Previous data will be automatically loaded from the filename.
+  - `opts.filename` (optional). The place where data is stored. Previous data will be automatically loaded from the filename.
 
 *Returns:* a userstore
 
@@ -73,12 +73,6 @@ Checks a given username and password against value currently stored in the datab
 *Returns:* Promise for a user object that matches a given username. If no user is found, null is returned.
 
 The hashed password is NOT included with this user object. To check if a password is valid for this user, use `users.authenticate()` instead
-
-### `users.findAll()`
-
-*Returns:* Promise for an array of all user objects.
-
-The hashed password is not included.
 
 ### `users.setUsername(userId, newUsername)`
 
