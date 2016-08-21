@@ -15,4 +15,16 @@ export default class UserStore {
       });
     }
   }
+
+  load(filename) {
+    // if there's already a database, throw an error
+    if (this.db) {
+      throw new Error('Database already loaded when this UserStore was instantiated.');
+    }
+
+    this.db = new NeDB({
+      filename,
+      autoload: true,
+    });
+  }
 }
