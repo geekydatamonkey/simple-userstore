@@ -38,7 +38,7 @@ export default class UserStore {
     });
   }
 
-  createUser({ username, password }) {
+  async createUser({ username, password }) {
     if (!this.db) {
       throw new Error('No database was loaded. Cannot create user.');
     }
@@ -46,6 +46,12 @@ export default class UserStore {
     if (!username) throw new Error('No username provided.');
 
     if (!password) throw new Error('No password provided.');
+
+    // check if username is unique
+    const user = await this.findByUsername(username);
+    if (user) {
+      throw new Error(`User '${username}' already exists. Usernames must be unique`);
+    }
 
     const now = new Date();
     return this.db.insert({
@@ -60,7 +66,7 @@ export default class UserStore {
     .catch(console.error);
   }
 
-  findByUsername(username) {
+  async findByUsername(username) {
     if (!this.db) throw new Error('No database loaded.');
 
     return this.db.find({ username })

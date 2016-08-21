@@ -20,7 +20,7 @@ test('new UserStore({filename}) automatically loads data from filename', async t
   t.is(userCollection.length, 0);
 });
 
-test.todo('new Userstore() takes a password schema as an option');
+// test.todo('new Userstore() takes a password schema as an option');
 
 // users.load()
 test('users.load(filename) will load data from filename', async t => {
@@ -86,7 +86,26 @@ test('createUser() requires a username', async t => {
   });
 });
 
-test.todo('createUser() throws error if username is not unique');
+test('createUser() throws error if username is not unique', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+  const userId = await users.createUser({
+    username: 'jerry',
+    password: '12345',
+  });
+
+  t.truthy(userId);
+
+  // try a second user with same username
+  try {
+    await users.createUser({
+      username: 'jerry',
+      password: '54321',
+    });
+  } catch (err) {
+    t.is(err.message, 'User \'jerry\' already exists. Usernames must be unique');
+  }
+});
 test.todo('createUser() usernames must start with letter or underscore');
 test.todo('createUser() usernames can only contain letters, numbers, underscores, hyphens');
 
