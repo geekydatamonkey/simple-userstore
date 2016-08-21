@@ -106,7 +106,62 @@ test('createUser() throws error if username is not unique', async t => {
     t.is(err.message, 'User \'jerry\' already exists. Usernames must be unique');
   }
 });
-test.todo('createUser() usernames must start with letter or underscore');
+
+test('createUser() usernames must start with letter or underscore', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+
+  // try a number
+  let invalidUserFromNumber;
+  try {
+    invalidUserFromNumber = await users.createUser({
+      username: '1a',
+      password: '123456',
+    });
+  } catch (err) {
+    t.truthy(err instanceof Error);
+  }
+  t.falsy(invalidUserFromNumber);
+
+  // try a special char
+  let invalidUserFromSpecialChar;
+  try {
+    invalidUserFromSpecialChar = await users.createUser({
+      username: '$pecial',
+      password: '123456',
+    });
+  } catch (err) {
+    t.truthy(err instanceof Error);
+  }
+  t.falsy(invalidUserFromSpecialChar);
+
+  // try a letter
+  let validUserId;
+  try {
+    validUserId = await users.createUser({
+      username: 's1234',
+      password: '123456',
+    });
+  } catch (err) {
+    t.fail(err.message);
+  }
+  t.truthy(validUserId);
+
+  // try an underscore
+  let validUserId2;
+  try {
+    validUserId2 = await users.createUser({
+      username: '__me__',
+      password: '123456',
+    });
+  } catch (err) {
+    t.fail(err.message);
+  }
+  t.truthy(validUserId2);
+});
+
+test.todo('createUser() trims whitespace from usernames and passwords');
+
 test.todo('createUser() usernames can only contain letters, numbers, underscores, hyphens');
 
 // users.createUser() validation of password
