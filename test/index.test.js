@@ -78,7 +78,14 @@ test('createUser() adds createdAt and updatedAt fields with current timestamp', 
 });
 
 // users.createUser() validation of username
-test.todo('createUser() requires a username');
+test('createUser() requires a username', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+  t.throws(() => {
+    return users.createUser();
+  });
+});
+
 test.todo('createUser() throws error if username is not unique');
 test.todo('createUser() usernames must start with letter or underscore');
 test.todo('createUser() usernames can only contain letters, numbers, underscores, hyphens');

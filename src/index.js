@@ -43,6 +43,10 @@ export default class UserStore {
       throw new Error('No database was loaded. Cannot create user.');
     }
 
+    if (!username) throw new Error('No username provided.');
+
+    if (!password) throw new Error('No password provided.');
+
     const now = new Date();
     return this.db.insert({
       username,
@@ -52,7 +56,8 @@ export default class UserStore {
     })
     .then((user) => {
       return user._id;
-    });
+    })
+    .catch(console.error);
   }
 
   findByUsername(username) {

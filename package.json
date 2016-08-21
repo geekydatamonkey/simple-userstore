@@ -11,7 +11,7 @@
     "build": "babel src/index.js -o dist/index.js",
     "start": "nodemon ./src/cli.js --exec babel-node",
     "test": "eslint src/**/*.js test/**/*.js && ava",
-    "test:watch": "ava --watch"
+    "test:watch": "ava --watch --verbose"
   },
   "author": "James Johnson <johnsojr@gmail.com> (http://james.mn/)",
   "license": "MIT",
