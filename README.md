@@ -15,11 +15,11 @@ import UserStore from 'simple-userstore';
 
 const users = new UserStore('users.db');
 
-users.createUser({ username: 'jerry', password: 'Hello, Newman.'});
-users.authenticate({ username: 'jerry', password: 'Hello, Newman.'});
+await users.createUser({ username: 'jerry', password: 'Hello, Newman.'});
+await users.authenticate({ username: 'jerry', password: 'Hello, Newman.'});
 // true
 
-const jerry = users.findByUsername('jerry')
+const jerry = await users.findByUsername('jerry')
 // {
 //   _id: ...,
 //   username: 'jerry',
@@ -27,12 +27,12 @@ const jerry = users.findByUsername('jerry')
 //   updatedAt: ...some Date...
 // }
 
-users.setPassword(jerry._id, '12345');
-users.setUsername(jerry._id, 'jerome');
-users.authenticate({ username: 'jerome', password: '12345'});
+await users.setPassword(jerry._id, '12345');
+await users.setUsername(jerry._id, 'jerome');
+await users.authenticate({ username: 'jerome', password: '12345'});
 // true
 
-users.removeUser(jerry._id);
+await users.removeUser(jerry._id);
 ```
 
 ## API
@@ -49,6 +49,8 @@ Constructor for a new place to store users.
 ### `users.load(filename)`
 
 Loads data from a filename.
+
+Any commands issued before database is loaded will be buffered.
 
 This should only be used if filename isn't specified when `users` is instantiated. If filename is given when instantiating `users`, the data will be automatically loaded.
 

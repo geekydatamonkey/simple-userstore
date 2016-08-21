@@ -50,8 +50,32 @@ test('cannot load data from a file more than once.' +
 });
 
 // users.createUser()
-test.todo('createUser() creates new user, returns the _id');
-test.todo('createUser() adds createdAt and updatedAt fields with current timestamp');
+test('createUser() creates new user, returns the _id', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+
+  const userId = await users.createUser({
+    username: 'jerry',
+    password: 'Hello... Newman.',
+  });
+
+  t.truthy(userId);
+});
+
+test('createUser() adds createdAt and updatedAt fields with current timestamp', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+
+  await users.createUser({
+    username: 'jerry',
+    password: 'Hello... Newman.',
+  });
+
+  const jerry = await users.findByUsername('jerry');
+  t.truthy(jerry.createdAt);
+  t.truthy(jerry.updatedAt);
+  t.is(jerry.createdAt, jerry.updatedAt);
+});
 
 // users.createUser() validation of username
 test.todo('createUser() requires a username');
