@@ -138,4 +138,27 @@ export default class UserStore {
         return safeUser;
       });
   }
+
+  authenticate({ username, password }) {
+    return new Promise((resolve, reject) => {
+      if (!username || !password) {
+        return reject('no username or password provided');
+      }
+
+      // use raw db.findOne to get user with
+      // hashed password
+      return this.db.findOne({ username })
+        .then((user) => {
+          if (!user) return resolve(false);
+
+          return bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) return reject(err);
+            return resolve(isMatch);
+          });
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
 }

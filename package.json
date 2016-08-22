@@ -10,7 +10,7 @@
     "prebuild": "rm -rf dist && mkdir dist",
     "build": "babel src/index.js -o dist/index.js",
     "start": "nodemon ./src/cli.js --exec babel-node",
-    "test": "eslint src/**/*.js test/**/*.js && ava",
+    "test": "eslint src/**/*.js test/**/*.js && ava ",
     "test:watch": "ava --watch"
   },
   "author": "James Johnson <johnsojr@gmail.com> (http://james.mn/)",
