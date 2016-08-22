@@ -173,7 +173,56 @@ test('createUser() trims whitespace from usernames and passwords', async t => {
   t.truthy(user);
 });
 
-test.todo('createUser() usernames can only contain letters, numbers, underscores, hyphens');
+test('createUser() usernames can only contain letters, numbers, underscores, hyphens', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+
+  const validUsernames = [
+    'a1',
+    'b2b2b2b',
+    'hello_kitty',
+    'mega-bot',
+    '__MEGATRON__42-42',
+  ];
+
+  const invalidUsernames = [
+    '1a',
+    '__ __ __',
+    'a.b.c',
+    '{}',
+    '<HTML5>',
+    '•¡™£',
+  ];
+
+  // helper fn for testing usernames
+  // will take a list of usernames and boil the results
+  // down to true if all usernames are valid, and
+  // false if any of the usernames are invalid.
+  const testUsernames = async (usernameList) => {
+    return Promise.all(usernameList.map((username) => {
+      return users.createUser({
+        username,
+        password: '12345',
+      })
+      .then((userId) => {
+        return !!userId; // convert to bool
+      })
+      .catch((err) => {
+        console.error(err);
+        // uh oh, these usernames should be valid. Fail.
+        return false;
+      });
+    }))
+    .then((validTestResults) => {
+      return validTestResults.every((result) => {
+        return (result === true);
+      });
+    });
+  };
+
+  t.truthy(await testUsernames(validUsernames));
+  t.falsy(await testUsernames(invalidUsernames));
+});
 
 // users.createUser() validation of password
 test.todo('createUser() hashes password');
