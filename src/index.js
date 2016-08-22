@@ -38,24 +38,58 @@ export default class UserStore {
     });
   }
 
+  _isValidUsername(username) {
+    if (!username) {
+      // console.error('No username given');
+      return false;
+    }
+
+    if (typeof username !== 'string') {
+      // console.error(`username '${username}' is not a string`);
+      return false;
+    }
+
+    // must start with letter or underscore
+    if (!username.match(/^[A-Z_]/i)) {
+      // console.error(`username '${username}' must start with a letter or underscore`);
+      return false;
+    }
+
+    return true;
+  }
+
+  // tests that the given username isn't already
+  // used within the datastore
+  async _isUsernameUnique(username) {
+    const existingUser = await this.findByUsername(username);
+    if (!existingUser) {
+      return true;
+    }
+    return false;
+  }
+
   async createUser({ username, password }) {
     if (!this.db) {
       throw new Error('No database was loaded. Cannot create user.');
     }
 
-    if (!username) throw new Error('No username provided.');
+    const trimmedUsername = username.trim();
+
+    // check if username is valid
+    if (!(this._isValidUsername(trimmedUsername))) {
+      throw new Error(`Username ${username} is not valid.`);
+    }
+
+    // check if username is unique
+    if (!(await this._isUsernameUnique(trimmedUsername))) {
+      throw new Error(`User '${username}' already exists. Usernames must be unique.`);
+    }
 
     if (!password) throw new Error('No password provided.');
 
-    // check if username is unique
-    const user = await this.findByUsername(username);
-    if (user) {
-      throw new Error(`User '${username}' already exists. Usernames must be unique`);
-    }
-
     const now = new Date();
     return this.db.insert({
-      username,
+      username: trimmedUsername,
       password,
       createdAt: now,
       updatedAt: now,
@@ -76,7 +110,10 @@ export default class UserStore {
 
         // this should never happen
         if (users.length > 1) {
-          throw new Error(`Expected only one user with username '${username}'. Found ${users.length} instead.` )
+          throw new Error(
+            `Expected only one user with username '${username}'. ` +
+            `Found ${users.length} instead.`
+          );
         }
 
         const user = users[0];
@@ -84,8 +121,12 @@ export default class UserStore {
         // blacklist the password field
         const safeUser = {};
         Object.keys(user)
-          .filter(key => key !== 'password')
-          .forEach(key => safeUser[key] = user[key]);
+          .filter(key => {
+            return key !== 'password';
+          })
+          .forEach(key => {
+            safeUser[key] = user[key];
+          });
 
         return safeUser;
       });

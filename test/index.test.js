@@ -103,7 +103,7 @@ test('createUser() throws error if username is not unique', async t => {
       password: '54321',
     });
   } catch (err) {
-    t.is(err.message, 'User \'jerry\' already exists. Usernames must be unique');
+    t.is(err.message, 'User \'jerry\' already exists. Usernames must be unique.');
   }
 });
 
@@ -160,7 +160,18 @@ test('createUser() usernames must start with letter or underscore', async t => {
   t.truthy(validUserId2);
 });
 
-test.todo('createUser() trims whitespace from usernames and passwords');
+test('createUser() trims whitespace from usernames and passwords', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+
+  await users.createUser({
+    username: '   jerry   ',
+    password: '12345',
+  });
+
+  const user = users.findByUsername('jerry');
+  t.truthy(user);
+});
 
 test.todo('createUser() usernames can only contain letters, numbers, underscores, hyphens');
 
