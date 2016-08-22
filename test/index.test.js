@@ -173,55 +173,52 @@ test('createUser() trims whitespace from usernames and passwords', async t => {
   t.truthy(user);
 });
 
-test('createUser() usernames can only contain letters, numbers, underscores, hyphens', async t => {
-  const filename = tempfile('.db');
-  const users = new UserStore(filename);
+// test valid users
+const validUsernames = [
+  'a1',
+  'b2b2b2b',
+  'hello_kitty',
+  'mega-bot',
+  '__MEGATRON__42-42',
+];
 
-  const validUsernames = [
-    'a1',
-    'b2b2b2b',
-    'hello_kitty',
-    'mega-bot',
-    '__MEGATRON__42-42',
-  ];
+validUsernames.forEach(validUsername => {
+  test('createUser() should allow valid usernames', async t => {
+    const filename = tempfile('.db');
+    const users = new UserStore(filename);
+    t.truthy(await users.createUser({
+      username: validUsername,
+      password: '12345',
+    }));
+  });
+});
 
-  const invalidUsernames = [
-    '1a',
-    '__ __ __',
-    'a.b.c',
-    '{}',
-    '<HTML5>',
-    '•¡™£',
-  ];
+// Test Invalid Usernames
+const invalidUsernames = [
+  '1a',
+  'a__ __ __',
+  'a.b.c',
+  'a{}',
+  'a<HTML5>',
+  'a•¡™£',
+];
 
-  // helper fn for testing usernames
-  // will take a list of usernames and boil the results
-  // down to true if all usernames are valid, and
-  // false if any of the usernames are invalid.
-  const testUsernames = async (usernameList) => {
-    return Promise.all(usernameList.map((username) => {
-      return users.createUser({
-        username,
+invalidUsernames.forEach(invalidUsername => {
+  test('createUser() should throw an error for ' +
+  'invalid usernames (anything other than letters, ' +
+  'numbers, and hyphens)', async t => {
+    const filename = tempfile('.db');
+    const users = new UserStore(filename);
+    try {
+      await users.createUser({
+        username: invalidUsername,
         password: '12345',
-      })
-      .then((userId) => {
-        return !!userId; // convert to bool
-      })
-      .catch((err) => {
-        console.error(err);
-        // uh oh, these usernames should be valid. Fail.
-        return false;
       });
-    }))
-    .then((validTestResults) => {
-      return validTestResults.every((result) => {
-        return (result === true);
-      });
-    });
-  };
-
-  t.truthy(await testUsernames(validUsernames));
-  t.falsy(await testUsernames(invalidUsernames));
+      t.fail(`exception is not thrown for ${invalidUsername}`);
+    } catch (err) {
+      t.pass();
+    }
+  });
 });
 
 // users.createUser() validation of password

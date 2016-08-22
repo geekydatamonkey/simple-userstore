@@ -44,17 +44,13 @@ export default class UserStore {
       return false;
     }
 
-    if (typeof username !== 'string') {
-      // console.error(`username '${username}' is not a string`);
-      return false;
-    }
+    if (typeof username !== 'string') { return false; }
 
     // must start with letter or underscore
-    if (!username.match(/^[A-Z_]/i)) {
-      // console.error(`username '${username}' must start with a letter or underscore`);
+    // and contain only letters, numbers and _, -
+    if (!username.match(/^[A-Z_][-_A-Z0-9]*$/i)) {
       return false;
     }
-
     return true;
   }
 
