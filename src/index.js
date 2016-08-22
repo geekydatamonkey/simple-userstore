@@ -161,4 +161,36 @@ export default class UserStore {
         });
     });
   }
+
+  async setUsername(userId, username) {
+    if (! this._isValidUsername(username)) {
+      throw new Error(`invalid username ${username}`);
+    }
+
+    if (!(await this._isUsernameUnique(username))) {
+      throw new Error(`username '${username} is already taken'`);
+    }
+
+    // const user = this.db.find({ _id: userId });
+    //
+    // if (!user) {
+    //   throw new Error(`userId '${userId} does not correspond to a valid user'`);
+    // }
+
+    const numUpdated = await this.db.update(
+      { _id: userId },
+      { $set: {
+        username,
+        updatedAt: new Date(),
+      } },
+    );
+
+    if (numUpdated === 0) {
+      throw new Error(`userId '${userId} does not correspond to a valid user'`);
+    }
+    if (numUpdated > 1) {
+      throw new Error(`More than one username was updated to ${username}. This should not happen.`);
+    }
+    return true;
+  }
 }
