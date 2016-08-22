@@ -3,6 +3,7 @@
 // in an NeDB database
 
 import NeDB from 'nedb-promise';
+import bcrypt from 'bcryptjs';
 
 export default class UserStore {
 
@@ -64,6 +65,16 @@ export default class UserStore {
     return false;
   }
 
+  // encrypts a password
+  async _hash(password) {
+    return new Promise((resolve, reject) => {
+      bcrypt.hash(password, 10, (err, hashedPass) => {
+        if (err) return reject(err);
+        return resolve(hashedPass);
+      });
+    });
+  }
+
   async createUser({ username, password }) {
     if (!this.db) {
       throw new Error('No database was loaded. Cannot create user.');
@@ -86,7 +97,7 @@ export default class UserStore {
     const now = new Date();
     return this.db.insert({
       username: trimmedUsername,
-      password,
+      password: await this._hash(password),
       createdAt: now,
       updatedAt: now,
     })

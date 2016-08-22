@@ -222,7 +222,27 @@ invalidUsernames.forEach(invalidUsername => {
 });
 
 // users.createUser() validation of password
-test.todo('createUser() hashes password');
+test('createUser() hashes password', async t => {
+  const filename = tempfile('.db');
+  const users = new UserStore(filename);
+
+  const username = 'jerry';
+  const password = 'hello... newman';
+
+  const userId = await users.createUser({
+    username,
+    password,
+  });
+
+  // verify that the password isn't stored in cleartext
+  const storedUser = await users.db.findOne({
+    _id: userId,
+  });
+
+  t.not(storedUser.password, password);
+  t.is(storedUser.username, username);
+});
+
 test.todo('createUser() requires a password at least 8 chars');
 
 // users.findByUsername()
