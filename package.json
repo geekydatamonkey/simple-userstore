@@ -2,7 +2,11 @@
   "name": "simple-userstore",
   "version": "0.0.0-semantic-release",
   "description": "A simple way to store user info. Nothing Fancy.",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geekydatamonkey/simple-userstore.git"
+  },
+  "main": "dist/index.js",
   "files": [
     "dist"
   ],
@@ -70,10 +74,6 @@
       "no-console": "off",
       "no-underscore-dangle": "off"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/geekydatamonkey/simple-userstore.git"
   },
   "czConfig": {
     "path": "node_modules/cz-conventional-changelog"
