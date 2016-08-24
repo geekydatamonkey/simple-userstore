@@ -39,7 +39,6 @@
     "eslint-plugin-import": "^1.13.0",
     "nodemon": "^1.10.0",
     "semantic-release": "^4.3.5",
-    "semantic-release-cli": "^1.4.1",
     "tempfile": "^1.1.1"
   },
   "babel": {
