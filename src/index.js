@@ -37,6 +37,8 @@ export default class UserStore {
       filename,
       autoload: true,
     });
+
+    return this;
   }
 
   _isValidUsername(username) {
@@ -163,7 +165,7 @@ export default class UserStore {
   }
 
   async setUsername(userId, username) {
-    if (! this._isValidUsername(username)) {
+    if (!this._isValidUsername(username)) {
       throw new Error(`invalid username ${username}`);
     }
 
@@ -186,11 +188,51 @@ export default class UserStore {
     );
 
     if (numUpdated === 0) {
-      throw new Error(`userId '${userId} does not correspond to a valid user'`);
+      throw new Error(`userId '${userId}' does not correspond to a valid user`);
     }
     if (numUpdated > 1) {
       throw new Error(`More than one username was updated to ${username}. This should not happen.`);
     }
-    return true;
+    return this;
+  }
+
+  async setPassword(userId, password) {
+    if (!password) throw new Error('no password provided');
+
+    const numUpdated = await this.db.update(
+      { _id: userId },
+      {
+        $set: {
+          password: await this._hash(password),
+          updatedAt: new Date(),
+        },
+      },
+    );
+
+    if (numUpdated === 0) {
+      throw new Error(`userId '${userId}' does not correspond to a valid user`);
+    }
+    if (numUpdated > 1) {
+      throw new Error('ERROR: More than one password was updated. '
+        + 'This should not happen.');
+    }
+    return this;
+  }
+
+  async removeUser(userId) {
+    if (!userId) throw new Error('no username provided');
+    if (typeof userId !== 'string') {
+      throw new Error('invalid userId.');
+    }
+
+    const numUpdated = await this.db.remove({
+      _id: userId,
+    }, {
+      justOne: true,
+    });
+
+    // should we throw error if 0? No error for now...
+    if (numUpdated > 1) throw new Error('ERROR: More than one user was deleted');
+    return (numUpdated === 1);
   }
 }
