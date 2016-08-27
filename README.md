@@ -37,12 +37,13 @@ await users.removeUser(jerry._id);
 
 ## API
 
-### `new UserStore(opts)`
+### `new UserStore(filename)`
 
 Constructor for a new place to store users.
 
 *Parameters:*
-  - `opts.filename` (optional). The place where data is stored. Previous data will be automatically loaded from the filename.
+  - `filename` (optional). The place where data is stored. Previous data will be automatically loaded from the filename. If no filename is provided at time
+  of instantiation, you must call `.load(filename)` before using the UserStore.
 
 *Returns:* a userstore
 
