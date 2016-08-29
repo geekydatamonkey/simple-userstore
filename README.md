@@ -2,6 +2,8 @@
 
 Simple storage of user info. Nothing fancy. Uses NeDB underneath.
 
+See Also: [simple-userstore-cli](https://github.com/geekydatamonkey/simple-userstore-cli) for a command line interface to this package.
+
 ## Installation
 
 ```
